@@ -36,14 +36,15 @@ void AMpPlayerControllerBase::SetupInput()
 void AMpPlayerControllerBase::InputHandler_Look(const FInputActionInstance& InputValue)
 {
 	const FVector2d LookValue = InputValue.GetValue().Get<FVector2d>();
-	GetPawn()->AddControllerYawInput(-LookValue.X);
+	GetPawn()->AddControllerYawInput(LookValue.X);
 	GetPawn()->AddControllerPitchInput(LookValue.Y);
 }
 
 void AMpPlayerControllerBase::InputHandler_Move(const FInputActionInstance& InputValue)
 {
 	const FVector2d MoveValue = InputValue.GetValue().Get<FVector2d>();
-	UKismetMathLibrary::GetRightVector(GetControlRotation())
-	GetControlRotation()
-	this->GetPawn()->AddMovementInput()
+	const FRotator Rotator = GetControlRotation();
+	const FVector3d Movement = UKismetMathLibrary::GetRightVector(FRotator(0., Rotator.Yaw, Rotator.Roll)) * MoveValue.X +
+		UKismetMathLibrary::GetForwardVector(FRotator(0., Rotator.Yaw,0.)) * MoveValue.Y;
+	this->GetPawn()->AddMovementInput(Movement);
 }
