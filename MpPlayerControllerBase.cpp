@@ -8,39 +8,35 @@
 #include "Kismet/KismetMathLibrary.h"
 
 
-void AMpPlayerControllerBase::BeginPlay()
+void AMpPlayerControllerBase::SetupInputComponent()
 {
-	Super::BeginPlay();
+	Super::SetupInputComponent();
 
-	SetupInput();
-}
-
-void AMpPlayerControllerBase::SetupInput()
-{
 	UEnhancedInputLocalPlayerSubsystem* InputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
-		GetLocalPlayer());
+	GetLocalPlayer());
 	if (InputSystem && InputMapping)
-	{
-		InputSystem->ClearAllMappings();
 		InputSystem->AddMappingContext(InputMapping, 0);
-	}
 	
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	if(EnhancedInputComponent && IA_Look && IA_Move)
 	{
-		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AMpPlayerControllerBase::InputHandler_Look);
-		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AMpPlayerControllerBase::InputHandler_Move);
+		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AMpPlayerControllerBase::LookCallback);
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AMpPlayerControllerBase::MoveCallback);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("AMpPlayerControllerBase: Not bound."));
 	}
 }
 
-void AMpPlayerControllerBase::InputHandler_Look(const FInputActionInstance& InputValue)
+
+void AMpPlayerControllerBase::LookCallback(const FInputActionInstance& InputValue)
 {
 	const FVector2d LookValue = InputValue.GetValue().Get<FVector2d>();
 	GetPawn()->AddControllerYawInput(LookValue.X);
 	GetPawn()->AddControllerPitchInput(LookValue.Y);
 }
 
-void AMpPlayerControllerBase::InputHandler_Move(const FInputActionInstance& InputValue)
+
+void AMpPlayerControllerBase::MoveCallback(const FInputActionInstance& InputValue)
 {
 	const FVector2d MoveValue = InputValue.GetValue().Get<FVector2d>();
 	const FRotator Rotator = GetControlRotation();

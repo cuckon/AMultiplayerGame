@@ -26,13 +26,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_Move;
-	
-protected:
-	virtual void BeginPlay() override;
 
-	void SetupInput();
+protected:
+	virtual void SetupInputComponent() override;
 
 private:
-	void InputHandler_Look(const FInputActionInstance& InputValue);
-	void InputHandler_Move(const FInputActionInstance& InputValue);
+	void LookCallback(const FInputActionInstance& InputValue);
+	void MoveCallback(const FInputActionInstance& InputValue);
 };
