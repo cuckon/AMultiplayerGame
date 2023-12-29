@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "MpPlayerControllerBase.h"
+#include "MpGameModeBase.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -72,14 +73,27 @@ void ACharBase::HandleMoveInput_Implementation(const FVector3d& WorldDirection)
 void ACharBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if(HasAuthority())
+	{
+		AMpGameModeBase* GameMode = Cast<AMpGameModeBase>(GetWorld()->GetAuthGameMode());
+		GameMode->Players.Add(this);
+	}
+}
+
+void ACharBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	if(HasAuthority())
+	{
+		AMpGameModeBase* GameMode = Cast<AMpGameModeBase>(GetWorld()->GetAuthGameMode());
+		GameMode->Players.Remove(this);
+	}
 }
 
 // Called every frame
 void ACharBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input

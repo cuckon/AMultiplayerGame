@@ -104,13 +104,13 @@ AMpGameModeBase::AMpGameModeBase()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AMpGameModeBase::BeginPlay()
+void UpdatePlayers(TArray<ACharBase*>& Players, UWorld* World)
 {
-	UE_LOG(LogTemp, Log, TEXT("AMpGameModeBase: BeginPlay"));
-	Super::BeginPlay();
 	TArray<AActor*> FoundPlayers;
+	Players.Reset();
+	
 	UGameplayStatics::GetAllActorsOfClass(
-		GetWorld(), ACharBase::StaticClass(), FoundPlayers);
+		World, ACharBase::StaticClass(), FoundPlayers);
 	for (const auto i: FoundPlayers)
 		if (ACharBase* CastedPlayer = Cast<ACharBase>(i))
 			Players.Add(CastedPlayer);

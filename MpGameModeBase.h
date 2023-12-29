@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "GameFramework/Character.h"
 
 #include "MpGameModeBase.generated.h"
 
@@ -17,14 +16,13 @@ UCLASS()
 class MULTIPLAYER_API AMpGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+	friend class ACharBase;
+	
 public:
 	AMpGameModeBase();
 	
 	UFUNCTION(Server, Unreliable, BlueprintCallable)
 	void Solve();
-	
-	void BeginPlay() override;
-
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
