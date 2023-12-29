@@ -6,7 +6,6 @@
 #include "EnhancedInputComponent.h"
 #include "MpPlayerControllerBase.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "WorldPartition/ContentBundle/ContentBundleLog.h"
 
 // Sets default values
 ACharBase::ACharBase()
@@ -48,12 +47,20 @@ void ACharBase::Release_Implementation(ACharBase* Player)
 {
 	CaughtPlayer = nullptr;
 	Player->CaughtByPlayers.Remove(this);
+	GEngine->AddOnScreenDebugMessage(
+		-1, 5.f, FColor::Green,
+		FString::Printf(TEXT("Player %s released"), *Player->GetName())
+	);
 }
 
 void ACharBase::Catch_Implementation(ACharBase* Player)
 {
 	CaughtPlayer = Player;
 	Player->CaughtByPlayers.Add(this);
+	GEngine->AddOnScreenDebugMessage(
+		-1, 5.f, FColor::Green,
+		FString::Printf(TEXT("Player %s caught"), *Player->GetName())
+	);
 }
 
 void ACharBase::HandleMoveInput_Implementation(const FVector3d& WorldDirection)
@@ -103,7 +110,6 @@ void ACharBase::CatchStartedCallback()
 	 if(ACharBase* FacingPlayer = GetFacingPlayer())
 	 {
 	 	Catch(FacingPlayer);
-	 	UE_LOG(LogTemp, Log, TEXT("Caught!"));
 	 }
 }
 
@@ -112,7 +118,6 @@ void ACharBase::CatchCompletedCallback()
 	if (CaughtPlayer)
 	{
 		Release(CaughtPlayer);
-		UE_LOG(LogTemp, Log, TEXT("Release!"));
 	}
 }
 

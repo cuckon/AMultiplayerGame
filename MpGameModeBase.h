@@ -8,6 +8,8 @@
 
 #include "MpGameModeBase.generated.h"
 
+class ACharBase;
+
 /**
  * 
  */
@@ -15,8 +17,9 @@ UCLASS()
 class MULTIPLAYER_API AMpGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-
 public:
+	AMpGameModeBase();
+	
 	UFUNCTION(Server, Unreliable, BlueprintCallable)
 	void Solve();
 	
@@ -25,5 +28,5 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
-	TArray<ACharacter*> Players;  // Players to move
+	TArray<ACharBase*> Players;  // Players to move
 };
