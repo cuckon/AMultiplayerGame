@@ -6,14 +6,16 @@
 #include "EnhancedInputComponent.h"
 #include "MpPlayerControllerBase.h"
 #include "MpGameModeBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ACharBase::ACharBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
 }
 
 ACharBase* ACharBase::GetFacingPlayer() const
@@ -56,7 +58,7 @@ void ACharBase::Release_Implementation(ACharBase* Player)
 
 void ACharBase::Catch_Implementation(ACharBase* Player)
 {
-	CaughtPlayer = Player;
+            	CaughtPlayer = Player;
 	Player->CaughtByPlayers.Add(this);
 	GEngine->AddOnScreenDebugMessage(
 		-1, 5.f, FColor::Green,
@@ -67,6 +69,12 @@ void ACharBase::Catch_Implementation(ACharBase* Player)
 void ACharBase::HandleMoveInput_Implementation(const FVector3d& WorldDirection)
 {
 	this->AddMovementInput(WorldDirection);
+}
+
+void ACharBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACharBase, CaughtPlayer);
 }
 
 // Called when the game starts or when spawned
