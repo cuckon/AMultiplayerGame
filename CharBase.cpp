@@ -34,15 +34,7 @@ ACharBase* ACharBase::GetFacingPlayer() const
 
 	if (!Result.bBlockingHit)
 		return nullptr;
-
-	DrawDebugLine(
-			GetWorld(),
-			Start,
-			Result.Location,
-			FColor(50, 190, 0),
-			false, 1, 0,
-			12.333
-		);
+	
 	return Cast<ACharBase>(Result.GetActor());
 }
 
