@@ -34,6 +34,16 @@ ACharBase* ACharBase::GetFacingPlayer() const
 
 	if (!Result.bBlockingHit)
 		return nullptr;
+
+	DrawDebugLine(
+			GetWorld(),
+			Start,
+			Result.Location,
+			FColor(50, 190, 0),
+			false, 1, 0,
+			12.333
+		);
+	
 	
 	return Cast<ACharBase>(Result.GetActor());
 }
@@ -50,7 +60,7 @@ void ACharBase::Release_Implementation(ACharBase* Player)
 
 void ACharBase::Catch_Implementation(ACharBase* Player)
 {
-            	CaughtPlayer = Player;
+	CaughtPlayer = Player;
 	Player->CaughtByPlayers.Add(this);
 	GEngine->AddOnScreenDebugMessage(
 		-1, 5.f, FColor::Green,
@@ -61,6 +71,9 @@ void ACharBase::Catch_Implementation(ACharBase* Player)
 void ACharBase::HandleMoveInput_Implementation(const FVector3d& WorldDirection)
 {
 	this->AddMovementInput(WorldDirection);
+	// GEngine->AddOnScreenDebugMessage(
+	// 	-1, 5.f, FColor::Green,
+	// 	FString::Printf(TEXT("Handled: %s"), *this->GetName()));
 }
 
 void ACharBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -121,7 +134,7 @@ void ACharBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACharBase::CatchStartedCallback()
 {
-	 if(ACharBase* FacingPlayer = GetFacingPlayer())
+  	 if(ACharBase* FacingPlayer = GetFacingPlayer())
 	 {
 	 	Catch(FacingPlayer);
 	 }

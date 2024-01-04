@@ -37,7 +37,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	ACharBase* CaughtPlayer;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<ACharBase*> CaughtByPlayers;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")

@@ -36,6 +36,7 @@ void SolvePDB(
 		for (int i = 0; i < Points_New.Num(); ++i)
 		{
 			FVector3d& Point = Points_New[i];
+			Movement = FVector3d::ZeroVector;
 
 			for (const auto& Link: Links)
 			{
@@ -107,7 +108,11 @@ void AMpGameModeBase::Solve_Implementation()
 
 	// Apply velocities
 	for (int i = 0; i<Players.Num(); ++i)
-		Players[i]->HandleMoveInput(Velocities[i]);
+		if (!Velocities[i].IsNearlyZero())
+		{
+			UE_LOG(LogTemp, Log, TEXT("Velocity: %s"), *Velocities[i].ToString());
+			Players[i]->HandleMoveInput(Velocities[i]);
+		}
 
 	// Draw links
 	DrawLinks(Players, Links, GetWorld());
