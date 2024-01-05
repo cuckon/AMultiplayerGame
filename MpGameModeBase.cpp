@@ -5,6 +5,7 @@
 #include "MpGameModeBase.h"
 #include "CharBase.h"
 #include "Kismet/GameplayStatics.h"
+UE_DISABLE_OPTIMIZATION
 
 using TLinks = TArray<TPair<int, int>>; 
 
@@ -14,8 +15,8 @@ void SolvePDB(
 	TLinks Links,
 	TArray<FVector3d>& OutVelocities,
 	const float RestLength=1,
-	const int N=10
-	)
+	const int N=10, const float VelocityScale=1.0
+)
 {
 	// Initialize
 	float Length, Error;
@@ -55,8 +56,8 @@ void SolvePDB(
 				Point_Another = Points[P_Another];
 				Delta = Point - Point_Another;
 				Length = Delta.Length() / 100;  // cm -> m
-				Error = (RestLength - Length) * .5;
-				Movement = Delta.GetSafeNormal() * Error;
+				Error = RestLength - Length;
+				Movement += Delta.GetSafeNormal() * Error;
 			}
 			Point += Movement;
 		}
@@ -64,7 +65,7 @@ void SolvePDB(
 
 	// Calculate velocity
 	for (int i = 0; i < Points_New.Num();++i)
-		OutVelocities[i] = Points_New[i] - Points[i];
+		OutVelocities[i] = (Points_New[i] - Points[i]) * VelocityScale;
 }
 
 
@@ -104,7 +105,7 @@ void AMpGameModeBase::Solve_Implementation()
 		Points.Add(Player->GetActorLocation());
 
 	// Solve
-	SolvePDB(Points, Links, Velocities);
+	SolvePDB(Points, Links, Velocities, 1, 3, 0.75);
 
 	// Apply velocities
 	for (int i = 0; i<Players.Num(); ++i)

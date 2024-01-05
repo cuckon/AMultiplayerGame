@@ -22,10 +22,10 @@ public:
 	UFUNCTION(Client, Unreliable)
 	void HandleMoveInput(const FVector3d& WorldDirection);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Catch(ACharBase* Player);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Release(ACharBase* Player);
 
 	UFUNCTION(BlueprintCallable)
