@@ -16,6 +16,8 @@ ACharBase::ACharBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+
+	ReachingTarget = CreateDefaultSubobject<USceneComponent>(TEXT("ReachingTarget"));
 }
 
 ACharBase* ACharBase::GetFacingPlayer() const
@@ -34,16 +36,6 @@ ACharBase* ACharBase::GetFacingPlayer() const
 
 	if (!Result.bBlockingHit)
 		return nullptr;
-
-	DrawDebugLine(
-			GetWorld(),
-			Start,
-			Result.Location,
-			FColor(50, 190, 0),
-			false, 1, 0,
-			12.333
-		);
-	
 	
 	return Cast<ACharBase>(Result.GetActor());
 }
@@ -51,29 +43,20 @@ ACharBase* ACharBase::GetFacingPlayer() const
 void ACharBase::Release_Implementation(ACharBase* Player)
 {
 	CaughtPlayer = nullptr;
+	ReachingTarget->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	Player->CaughtByPlayers.Remove(this);
-	GEngine->AddOnScreenDebugMessage(
-		-1, 5.f, FColor::Green,
-		FString::Printf(TEXT("Player %s released"), *Player->GetName())
-	);
 }
 
 void ACharBase::Catch_Implementation(ACharBase* Player)
 {
 	CaughtPlayer = Player;
+	ReachingTarget->AttachToComponent(Player->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Player->CaughtByPlayers.Add(this);
-	GEngine->AddOnScreenDebugMessage(
-		-1, 5.f, FColor::Green,
-		FString::Printf(TEXT("Player %s caught"), *Player->GetName())
-	);
 }
 
 void ACharBase::HandleMoveInput_Implementation(const FVector3d& WorldDirection)
 {
 	this->AddMovementInput(WorldDirection);
-	// GEngine->AddOnScreenDebugMessage(
-	// 	-1, 5.f, FColor::Green,
-	// 	FString::Printf(TEXT("Handled: %s"), *this->GetName()));
 }
 
 void ACharBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -134,10 +117,13 @@ void ACharBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACharBase::CatchStartedCallback()
 {
-  	 if(ACharBase* FacingPlayer = GetFacingPlayer())
-	 {
+	ACharBase* FacingPlayer = GetFacingPlayer();
+	if(FacingPlayer)
+	{
 	 	Catch(FacingPlayer);
-	 }
+	}
+	CatchDelegate.Broadcast(FacingPlayer);
+	bCatching = true;
 }
 
 void ACharBase::CatchCompletedCallback()
@@ -146,5 +132,7 @@ void ACharBase::CatchCompletedCallback()
 	{
 		Release(CaughtPlayer);
 	}
+	ReleaseDelegate.Broadcast(CaughtPlayer);
+	bCatching = false;
 }
 

@@ -140,5 +140,7 @@ void UpdatePlayers(TArray<ACharBase*>& Players, UWorld* World)
 void AMpGameModeBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	Solve();
+	
+	if (bSolvePDB)
+		Solve();
 }

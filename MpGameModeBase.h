@@ -25,6 +25,9 @@ public:
 	void Solve();
 	virtual void Tick(float DeltaSeconds) override;
 
+	UPROPERTY(EditDefaultsOnly)
+	bool bSolvePDB = true;
+
 private:
 	TArray<ACharBase*> Players;  // Players to move
 };

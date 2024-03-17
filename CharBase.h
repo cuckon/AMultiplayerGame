@@ -9,6 +9,7 @@
 
 class UInputMappingContext;
 class UInputAction;
+class ACharBase;
 
 UCLASS()
 class MULTIPLAYER_API ACharBase : public ACharacter
@@ -16,28 +17,33 @@ class MULTIPLAYER_API ACharBase : public ACharacter
 	GENERATED_BODY()
 
 public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharBaseDeletegate, ACharBase*, Target);
+
 	// Sets default values for this character's properties
 	ACharBase();
 
 	UFUNCTION(Client, Unreliable)
 	void HandleMoveInput(const FVector3d& WorldDirection);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Catch")
 	void Catch(ACharBase* Player);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Catch")
 	void Release(ACharBase* Player);
 
 	UFUNCTION(BlueprintCallable)
 	ACharBase* GetFacingPlayer() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Catch")
+	bool bCatching = false;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Catch Distance (meters)")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Catch Distance (meters)", Category = "Catch")
 	double CatchDistance = 1.0;
 	
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Catch")
 	ACharBase* CaughtPlayer;
 
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Catch")
 	TArray<ACharBase*> CaughtByPlayers;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
@@ -47,6 +53,16 @@ public:
 	UInputAction* IA_Catch;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(BlueprintAssignable, Category = "Catch")
+	FCharBaseDeletegate CatchDelegate;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Catch")
+	FCharBaseDeletegate ReleaseDelegate;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Catch")
+	USceneComponent* ReachingTarget;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
