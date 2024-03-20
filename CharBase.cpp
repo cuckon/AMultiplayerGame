@@ -45,6 +45,7 @@ void ACharBase::Release_Implementation(ACharBase* Player)
 	CaughtPlayer = nullptr;
 	ReachingTarget->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	Player->CaughtByPlayers.Remove(this);
+	bCatching = false;
 }
 
 void ACharBase::Catch_Implementation(ACharBase* Player)
@@ -52,6 +53,8 @@ void ACharBase::Catch_Implementation(ACharBase* Player)
 	CaughtPlayer = Player;
 	ReachingTarget->AttachToComponent(Player->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Player->CaughtByPlayers.Add(this);
+
+	bCatching = true;
 }
 
 void ACharBase::HandleMoveInput_Implementation(const FVector3d& WorldDirection)
@@ -123,7 +126,6 @@ void ACharBase::CatchStartedCallback()
 	 	Catch(FacingPlayer);
 	}
 	CatchDelegate.Broadcast(FacingPlayer);
-	bCatching = true;
 }
 
 void ACharBase::CatchCompletedCallback()
@@ -133,6 +135,5 @@ void ACharBase::CatchCompletedCallback()
 		Release(CaughtPlayer);
 	}
 	ReleaseDelegate.Broadcast(CaughtPlayer);
-	bCatching = false;
 }
 
