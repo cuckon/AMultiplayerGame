@@ -11,6 +11,8 @@ class UInputMappingContext;
 class UInputAction;
 class ACharBase;
 
+/** Representation of a catchable and caughtable player's character
+ */
 UCLASS()
 class MULTIPLAYER_API ACharBase : public ACharacter
 {
