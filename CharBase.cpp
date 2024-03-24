@@ -10,7 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-const double AlignToCaughtRate = 2.0;
+const double AlignToCaughtRate = 10.0;
 
 // Sets default values
 ACharBase::ACharBase()
@@ -68,6 +68,7 @@ void ACharBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACharBase, CaughtPlayer);
+	DOREPLIFETIME(ACharBase, bCatching);
 }
 
 // Called when the game starts or when spawned
@@ -114,31 +115,31 @@ void ACharBase::Tick(float DeltaTime)
 			FVector::ZeroVector, DesiredRotation,
 			/*bSweep*/ false );
 
-		// Visualize the rotation
-		DrawDebugDirectionalArrow(
-			GetWorld(),
-			GetActorLocation(),
-			GetActorLocation() + Rotation.RotateVector(FVector(1,0,0)) * 100,
-			// GetActorLocation() + Direction.GetSafeNormal() * 100,
-			50,
-			FColor::Green,
-			false,
-			-1,
-			0,
-			2
-		);
-		DrawDebugDirectionalArrow(
-			GetWorld(),
-			GetActorLocation(),
-			GetActorLocation() + DesiredRotation.RotateVector(FVector(1,0,0)) * 100,
-			// GetActorLocation() + GetActorForwardVector().GetSafeNormal() * 100,
-			50,
-			FColor::Red,
-			false,
-			-1,
-			0,
-			2
-		);
+		// // Visualize the rotation
+		// DrawDebugDirectionalArrow(
+		// 	GetWorld(),
+		// 	GetActorLocation(),
+		// 	GetActorLocation() + Rotation.RotateVector(FVector(1,0,0)) * 100,
+		// 	// GetActorLocation() + Direction.GetSafeNormal() * 100,
+		// 	50,
+		// 	FColor::Green,
+		// 	false,
+		// 	-1,
+		// 	0,
+		// 	2
+		// );
+		// DrawDebugDirectionalArrow(
+		// 	GetWorld(),
+		// 	GetActorLocation(),
+		// 	GetActorLocation() + DesiredRotation.RotateVector(FVector(1,0,0)) * 100,
+		// 	// GetActorLocation() + GetActorForwardVector().GetSafeNormal() * 100,
+		// 	50,
+		// 	FColor::Red,
+		// 	false,
+		// 	-1,
+		// 	0,
+		// 	2
+		// );
 	}
 	
 	if (CaughtByPlayers.Num())

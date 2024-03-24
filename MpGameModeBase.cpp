@@ -116,7 +116,7 @@ void AMpGameModeBase::Solve_Implementation()
 		}
 
 	// Draw links
-	DrawLinks(Players, Links, GetWorld());
+	// DrawLinks(Players, Links, GetWorld());
 }
 
 AMpGameModeBase::AMpGameModeBase()
