@@ -7,14 +7,15 @@
 #include "Kismet/GameplayStatics.h"
 UE_DISABLE_OPTIMIZATION
 
-using TLinks = TArray<TPair<int, int>>; 
+using TLink = TPair<int, int>;
+using TLinks = TArray<TLink>; 
 
 //TODO: Make it 2d to potentially speed it up
 void SolvePDB(
 	const TArray<FVector3d> &Points,
 	TLinks Links,
 	TArray<FVector3d>& OutVelocities,
-	const float RestLength=1,
+	const float RestLength=1, // in meters
 	const int N=10, const float VelocityScale=1.0
 )
 {
@@ -31,6 +32,16 @@ void SolvePDB(
 		OutVelocities.Emplace(FVector3d::ZeroVector);
 	}
 
+	// Generate the links of too close
+	double DistanceThreshold = RestLength * RestLength;
+	TLinks AllLinks = Links; // deep copy
+
+	{
+		for (int i = 0; i < Points_New.Num(); ++i)
+			for(int j = i + 1; j < Points_New.Num();++j)
+				if (FVector::Dist(Points_New[i], Points_New[j]) / 100 < DistanceThreshold)
+						AllLinks.AddUnique(TLink(i, j));
+	}
 	// Solve
 	for (int iSubstep = 0; iSubstep < N; ++iSubstep)
 	{
@@ -39,7 +50,7 @@ void SolvePDB(
 			FVector3d& Point = Points_New[i];
 			Movement = FVector3d::ZeroVector;
 
-			for (const auto& Link: Links)
+			for (const auto& Link: AllLinks)
 			{
 				// TODO: cache this
 				if (Link.Key == i)
@@ -72,12 +83,12 @@ void SolvePDB(
 void BuildLinksData(const TArray<ACharBase*> &Players, TLinks& Result)
 {
 	Result.Reset();
-	TPair<int, int> Link;
+	TLink Link;
 	for (int i = 0; i<Players.Num(); ++i)
 	{
 		if (Players[i]->CaughtPlayer)
 		{
-			Link = TPair<int, int>(i, Players.Find(Players[i]->CaughtPlayer));
+			Link = TLink(i, Players.Find(Players[i]->CaughtPlayer));
 			Result.Add(Link);
 		}
 	}

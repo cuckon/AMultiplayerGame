@@ -114,36 +114,6 @@ void ACharBase::Tick(float DeltaTime)
 		GetCharacterMovement()->MoveUpdatedComponent(
 			FVector::ZeroVector, DesiredRotation,
 			/*bSweep*/ false );
-
-		// // Visualize the rotation
-		// DrawDebugDirectionalArrow(
-		// 	GetWorld(),
-		// 	GetActorLocation(),
-		// 	GetActorLocation() + Rotation.RotateVector(FVector(1,0,0)) * 100,
-		// 	// GetActorLocation() + Direction.GetSafeNormal() * 100,
-		// 	50,
-		// 	FColor::Green,
-		// 	false,
-		// 	-1,
-		// 	0,
-		// 	2
-		// );
-		// DrawDebugDirectionalArrow(
-		// 	GetWorld(),
-		// 	GetActorLocation(),
-		// 	GetActorLocation() + DesiredRotation.RotateVector(FVector(1,0,0)) * 100,
-		// 	// GetActorLocation() + GetActorForwardVector().GetSafeNormal() * 100,
-		// 	50,
-		// 	FColor::Red,
-		// 	false,
-		// 	-1,
-		// 	0,
-		// 	2
-		// );
-	}
-	
-	if (CaughtByPlayers.Num())
-	{
 	}
 }
 
