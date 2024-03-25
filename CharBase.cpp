@@ -18,6 +18,7 @@ ACharBase::ACharBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+	bUseControllerRotationYaw = false;
 
 	ReachingTarget = CreateDefaultSubobject<USceneComponent>(TEXT("ReachingTarget"));
 	ReachingTarget->SetIsReplicated(true);
@@ -57,15 +58,20 @@ void ACharBase::Release_Implementation(ACharBase* Player)
 {
 	CaughtPlayer = nullptr;
 	ReachingTarget->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	Player->CaughtByPlayers.Remove(this);
+	if (IsValid(Player))
+		Player->CaughtByPlayers.Remove(this);
+	
 	bCatching = false;
 }
 
 void ACharBase::Catch_Implementation(ACharBase* Player)
 {
 	CaughtPlayer = Player;
-	ReachingTarget->AttachToComponent(Player->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	Player->CaughtByPlayers.Add(this);
+	if (IsValid(Player))
+	{
+		ReachingTarget->AttachToComponent(Player->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		Player->CaughtByPlayers.Add(this);
+	}
 
 	bCatching = true;
 }
@@ -158,19 +164,13 @@ void ACharBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ACharBase::CatchStartedCallback()
 {
 	ACharBase* FacingPlayer = GetFacingPlayer();
-	if(FacingPlayer)
-	{
-	 	Catch(FacingPlayer);
-	}
+	Catch(FacingPlayer);
 	CatchDelegate.Broadcast(this, FacingPlayer);
 }
 
 void ACharBase::CatchCompletedCallback()
 {
-	if (CaughtPlayer)
-	{
-		Release(CaughtPlayer);
-	}
+	Release(CaughtPlayer);
 	ReleaseDelegate.Broadcast(this, CaughtPlayer);
 }
 

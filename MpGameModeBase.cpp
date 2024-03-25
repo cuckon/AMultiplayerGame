@@ -5,6 +5,7 @@
 #include "MpGameModeBase.h"
 #include "CharBase.h"
 #include "Eagle.h"
+#include "Hen.h"
 #include "Kismet/GameplayStatics.h"
 UE_DISABLE_OPTIMIZATION
 
@@ -168,5 +169,8 @@ void AMpGameModeBase::PostLogin(APlayerController* NewPlayer)
 
 void AMpGameModeBase::EagleCaughtChicken_Implementation(ACharBase* Eagle, ACharBase* Hen)
 {
-	UE_LOG(LogTemp, Log, TEXT("Eagle caught chicken"));
+	if (AHen* HenTyped = Cast<AHen>(Hen))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Eagle caught chicken"));
+	}
 }
