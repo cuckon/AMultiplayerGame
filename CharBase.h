@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "InputAction.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "CharBase.generated.h"
 
 class UInputMappingContext;
@@ -19,7 +21,7 @@ class MULTIPLAYER_API ACharBase : public ACharacter
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharBaseDeletegate, ACharBase*, Target);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharBaseDeletegate, ACharBase*, Self, ACharBase*, Target);
 
 	// Sets default values for this character's properties
 	ACharBase();
@@ -64,6 +66,12 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Catch")
 	USceneComponent* ReachingTarget;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UCameraComponent* Camera;
 	
 protected:
 	// Called when the game starts or when spawned

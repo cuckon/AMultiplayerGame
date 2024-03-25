@@ -8,6 +8,8 @@
 #include "MpGameModeBase.generated.h"
 
 class ACharBase;
+class AEagle;
+class Hen;
 
 /**
  * 
@@ -28,6 +30,11 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	bool bSolvePDB = true;
 
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 private:
 	TArray<ACharBase*> Players;  // Players to move
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void EagleCaughtChicken(ACharBase* Eagle, ACharBase* Hen);
 };

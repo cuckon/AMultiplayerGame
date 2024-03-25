@@ -4,6 +4,7 @@
 // ReSharper disable CppJoinDeclarationAndAssignment
 #include "MpGameModeBase.h"
 #include "CharBase.h"
+#include "Eagle.h"
 #include "Kismet/GameplayStatics.h"
 UE_DISABLE_OPTIMIZATION
 
@@ -32,7 +33,7 @@ void SolvePDB(
 		OutVelocities.Emplace(FVector3d::ZeroVector);
 	}
 
-	// Generate the links of too close
+	// Generate the links between players that get too close
 	double DistanceThreshold = RestLength * RestLength;
 	TLinks AllLinks = Links; // deep copy
 
@@ -122,7 +123,6 @@ void AMpGameModeBase::Solve_Implementation()
 	for (int i = 0; i<Players.Num(); ++i)
 		if (!Velocities[i].IsNearlyZero())
 		{
-			UE_LOG(LogTemp, Log, TEXT("Velocity: %s"), *Velocities[i].ToString());
 			Players[i]->HandleMoveInput(Velocities[i]);
 		}
 
@@ -154,4 +154,19 @@ void AMpGameModeBase::Tick(float DeltaSeconds)
 	
 	if (bSolvePDB)
 		Solve();
+}
+
+void AMpGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+	if (AEagle* NewEagle = Cast<AEagle>(NewPlayer->GetCharacter()))
+	{
+		NewEagle->CatchDelegate.AddDynamic(this, &AMpGameModeBase::EagleCaughtChicken);
+	}
+	
+}
+
+void AMpGameModeBase::EagleCaughtChicken_Implementation(ACharBase* Eagle, ACharBase* Hen)
+{
+	UE_LOG(LogTemp, Log, TEXT("Eagle caught chicken"));
 }

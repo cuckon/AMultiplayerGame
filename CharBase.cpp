@@ -20,6 +20,17 @@ ACharBase::ACharBase()
 	bReplicates = true;
 
 	ReachingTarget = CreateDefaultSubobject<USceneComponent>(TEXT("ReachingTarget"));
+	ReachingTarget->SetIsReplicated(true);
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->bUsePawnControlRotation = true;
+	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->SetRelativeLocation(FVector(0.f, 0.f, 8.5f));
+	SpringArm->TargetArmLength = 400.f;
+
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->SetupAttachment(SpringArm);
+	
 }
 
 ACharBase* ACharBase::GetFacingPlayer() const
@@ -126,6 +137,10 @@ void ACharBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		Cast<APlayerController>(GetController())->GetLocalPlayer());
 	if (InputSystem && InputMapping)
 		InputSystem->AddMappingContext(InputMapping, 0);
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACharBase: Input mapping not found."));
+	}
 	
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	if(EnhancedInputComponent && IA_Catch)
@@ -147,7 +162,7 @@ void ACharBase::CatchStartedCallback()
 	{
 	 	Catch(FacingPlayer);
 	}
-	CatchDelegate.Broadcast(FacingPlayer);
+	CatchDelegate.Broadcast(this, FacingPlayer);
 }
 
 void ACharBase::CatchCompletedCallback()
@@ -156,6 +171,6 @@ void ACharBase::CatchCompletedCallback()
 	{
 		Release(CaughtPlayer);
 	}
-	ReleaseDelegate.Broadcast(CaughtPlayer);
+	ReleaseDelegate.Broadcast(this, CaughtPlayer);
 }
 
